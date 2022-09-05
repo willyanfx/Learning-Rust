@@ -1,4 +1,4 @@
-use std::{collections::HashMap, io::Read, str::FromStr};
+use std::collections::HashMap;
 struct Todo {
     map: HashMap<String, bool>,
 }
@@ -18,28 +18,26 @@ impl Todo {
     }
 
     fn new() -> Result<Todo, std::io::Error> {
-        let mut file = std::fs::OpenOptions::new()
+        let file = std::fs::OpenOptions::new()
             .write(true)
             .create(true)
             .read(true)
-            .open("db.txt")?;
-        let mut content = String::new();
-        file.read_to_string(&mut content)?;
-        let map: HashMap<String, bool> = content
-            .lines()
-            .map(|line| line.splitn(2, '\t').collect::<Vec<&str>>())
-            .map(|v| (v[0], v[1]))
-            .map(|(k, v)| (String::from(k), bool::from_str(v).unwrap()))
-            .collect();
-        Ok(Todo { map })
-    }
-    fn save(self) -> Result<(), std::io::Error> {
-        let mut content = String::new();
-        for (k, v) in self.map {
-            let record = format!("{}\t{}\n", k, v);
-            content.push_str(&record)
+            .open("db.json")?;
+        match serde_json::from_reader(file) {
+            Ok(map) => Ok(Todo { map }),
+            Err(error) if error.is_eof() => Ok(Todo {
+                map: HashMap::new(),
+            }),
+            Err(error) => panic!("An error occurred: {}", error),
         }
-        std::fs::write("db.txt", content)
+    }
+    fn save(self) -> Result<(), Box<dyn std::error::Error>> {
+        let file = std::fs::OpenOptions::new()
+            .write(true)
+            .create(true)
+            .open("db.json")?;
+        serde_json::to_writer_pretty(file, &self.map)?;
+        Ok(())
     }
 }
 
@@ -49,6 +47,7 @@ fn main() {
 
     let mut todo = Todo::new().expect("Initialisation of db failed");
 
+    //  cargo run -- add "make coffee"
     if action == "add" {
         todo.insert(item);
         match todo.save() {
