@@ -3,10 +3,10 @@ pub const MIN_LENGTH: i32 = 4;
 pub const MAX_LENGTH: i32 = 32;
 
 // [Letters,Digits, Symbols]
-const CHAR: [str] = [
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-    "1234567890",
-    "*;<>()[]{}#@$?!^~|_-",
+const CHAR: [String; 3] = [
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".to_owned(),
+    "1234567890".to_owned(),
+    "*;<>()[]{}#@$?!^~|_-".to_owned(),
 ];
 
 struct UnitDict {
