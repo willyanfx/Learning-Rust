@@ -1,7 +1,4 @@
 #[warn(dead_code)]
-use std::env::{args, Args};
-use std::os::macos::raw::stat;
-
 #[derive(Debug)]
 enum Operators {
     Add,
