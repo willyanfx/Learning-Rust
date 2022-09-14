@@ -1,3 +1,5 @@
+pub mod constant;
+
 fn main() {
     results(26.0, 13.0, 1, Unit::Hour);
 }
@@ -19,6 +21,7 @@ fn results(string_len: f32, length: f32, speed: i32, unit: Unit) {
     let random_bits = get_random_bits(string_len, length);
     let generate_for_collision = get_generate_for_collision(random_bits, probability);
     let time_to_collision = get_time_to_collision(generate_for_collision, speed_per_second);
+    format_duration(time_to_collision);
 }
 
 fn get_random_bits(string_length: f32, size: f32) -> f32 {
@@ -33,6 +36,16 @@ fn get_generate_for_collision(random_bits: f32, probability: f32) -> f32 {
 
 fn get_time_to_collision(generate_for_collision: f32, speed_per_second: f32) -> f32 {
     (generate_for_collision / speed_per_second).floor()
+}
+
+fn format_duration(seconds: f32) {
+    let current = seconds;
+    // loop through the array
+    // get the object
+    // divide igual `/=` current for Object[num]
+    // if not Object[index + 1] or current divided by  Object[index + 1].num < 1
+    // // round current
+    // // return round value + ending + if plurized
 }
 
 #[cfg(test)]
