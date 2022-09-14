@@ -15,13 +15,6 @@ fn results(string_len: f32, length: f32, speed: i32, unit: Unit) {
     } else {
         speed as f32
     };
-    println!("SPEED:::: {:?}", speed_per_second);
-
-    let rand: f32 = 61.105713;
-    println!(
-        "2481147136228978700:::: {:?}",
-        2_f32 * f32::powf(2_f32, rand)
-    );
 
     let random_bits = get_random_bits(string_len, length);
     let generate_for_collision = get_generate_for_collision(random_bits, probability);
@@ -62,5 +55,13 @@ mod tests {
             get_generate_for_collision(88.37699, probability),
             2842280000000.0
         );
+    }
+
+    #[test]
+    fn test_time_to_collision() {
+        let an_hour = 0.0002777777778;
+        let sec = 360_f32;
+        assert_eq!(get_time_to_collision(223321470.0, an_hour), 803957291935.0);
+        assert_eq!(get_time_to_collision(2842280000000.0, sec), 7895222222.0);
     }
 }
