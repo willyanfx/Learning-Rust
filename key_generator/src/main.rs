@@ -2,7 +2,7 @@ use rand::Rng;
 fn main() {
     let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".to_owned();
     // results(26.0, 13.0, 1, Unit::Hour);
-    generate_password(char, 13)
+    generate_password(char, 13);
 }
 
 #[derive(Debug)]
@@ -92,5 +92,14 @@ mod tests {
         let sec = 360_f32;
         assert_eq!(get_time_to_collision(223321470.0, an_hour), 803957291935.0);
         assert_eq!(get_time_to_collision(2842280000000.0, sec), 7895222222.0);
+    }
+    #[test]
+    fn test_generate_password() {
+        let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".to_owned();
+        assert_eq!(generate_password(char, 13).len(), 13);
+        assert_eq!(
+            generate_password("ABCDEFGHIJKLMNO".to_owned(), 24).len(),
+            24
+        );
     }
 }
