@@ -1,7 +1,8 @@
-pub mod constant;
-
+use rand::Rng;
 fn main() {
-    results(26.0, 13.0, 1, Unit::Hour);
+    let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".to_owned();
+    // results(26.0, 13.0, 1, Unit::Hour);
+    generate_password(char, 13)
 }
 
 #[derive(Debug)]
@@ -46,6 +47,21 @@ fn format_duration(seconds: f32) {
     // if not Object[index + 1] or current divided by  Object[index + 1].num < 1
     // // round current
     // // return round value + ending + if plurized
+}
+
+fn generate_password(alphabet: String, size: i32) -> String {
+    let charset = alphabet.as_bytes();
+    let password_len = size as usize;
+    let mut rng = rand::thread_rng();
+
+    let password: String = (0..password_len)
+        .map(|_| {
+            let idx = rng.gen_range(0..alphabet.len());
+            charset[idx] as char
+        })
+        .collect();
+
+    password
 }
 
 #[cfg(test)]
