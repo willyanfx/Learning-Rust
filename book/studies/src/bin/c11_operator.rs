@@ -15,9 +15,7 @@ fn write_info(info: &Info) -> io::Result<()> {
     file.write_all(format!("name: {}\n", info.name).as_bytes())?;
     file.write_all(format!("idade: {}\n", info.age).as_bytes())?; 
     file.write_all(format!("avaliação: {}\n", info.rating).as_bytes())?;
-
     Ok(())
-
   }
 
 fn main() {
@@ -26,8 +24,6 @@ fn main() {
         age: 35,
         rating: 10
     };
-
-    match write_info(&friend01) {
         Err(e) => println!("Something went wrong -> {}", e),
         Ok(()) => println!("All good"),
     };
