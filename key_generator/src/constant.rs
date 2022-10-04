@@ -3,8 +3,11 @@ pub const MIN_LENGTH: i32 = 4;
 pub const MAX_LENGTH: i32 = 32;
 
 // [Letters,Digits, Symbols]
-const CHAR: [String; 3] = [
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".to_owned(),
+const CHAR: [(String, String); 3] = [
+    (
+        "alphabet",
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz".to_owned(),
+    ),
     "1234567890".to_owned(),
     "*;<>()[]{}#@$?!^~|_-".to_owned(),
 ];
