@@ -7,13 +7,10 @@ struct Fibonacci {
 impl Iterator for Fibonacci {
     type Item = u32;
 
-
     fn next(&mut self) -> Option<u32> {
         let new_next = self.curr + self.next;
-
         self.curr = self.next;
         self.next = new_next;
-
         // Fibonacci is infinite, however we will condition to max 21
         
         if self.curr > 21 {
@@ -21,9 +18,7 @@ impl Iterator for Fibonacci {
         } else {
             Some(self.curr)
         }
-
     }
-
 }
 
 fn main() {
