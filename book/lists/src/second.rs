@@ -1,8 +1,8 @@
-use std::mem;
-
 pub struct List<T> {
     head: Link<T>,
 }
+
+type Link<T> = Option<Box<Node<T>>>;
 
 pub struct IntoIter<T>(List<T>);
 
@@ -10,7 +10,9 @@ pub struct Iter<'a, T> {
     next: Option<&'a Node<T>>,
 }
 
-type Link<T> = Option<Box<Node<T>>>;
+pub struct IterMut<'a, T> {
+    next: Option<&'a mut Node<T>>,
+}
 
 struct Node<T> {
     elem: T,
@@ -20,16 +22,6 @@ struct Node<T> {
 impl<T> List<T> {
     pub fn new() -> Self {
         List { head: None }
-    }
-
-    pub fn into_iter(self) -> IntoIter<T> {
-        IntoIter(self)
-    }
-
-    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
-        Iter {
-            next: self.head.as_deref(),
-        }
     }
 
     pub fn push(&mut self, elem: T) {
@@ -56,6 +48,22 @@ impl<T> List<T> {
     pub fn peek_mut(&mut self) -> Option<&mut T> {
         self.head.as_mut().map(|node| &mut node.elem)
     }
+
+    pub fn into_iter(self) -> IntoIter<T> {
+        IntoIter(self)
+    }
+
+    pub fn iter<'a>(&'a self) -> Iter<'a, T> {
+        Iter {
+            next: self.head.as_deref(),
+        }
+    }
+
+    pub fn iter_mut(&mut self) -> IterMut<'_, T> {
+        IterMut {
+            next: self.head.as_deref_mut(),
+        }
+    }
 }
 
 impl<T> Iterator for IntoIter<T> {
@@ -76,12 +84,24 @@ impl<'a, T> Iterator for Iter<'a, T> {
         })
     }
 }
+// Integers have no ownership semantics; they're just meaningless numbers! This is why integers are marked as Copy. Copy types are known to be perfectly copyable by a bitwise copy. As such, they have a super power: when moved, the old value is still usable. As a consequence, you can even move a Copy type out of a reference without replacement!
+
+impl<'a, T> Iterator for IterMut<'a, T> {
+    type Item = &'a mut T;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.next.take().map(|node| {
+            self.next = node.next.as_deref_mut();
+            &mut node.elem
+        })
+    }
+}
 
 impl<T> Drop for List<T> {
     fn drop(&mut self) {
         let mut cur_link = self.head.take();
         while let Some(mut boxed_node) = cur_link {
-            cur_link = mem::replace(&mut boxed_node.next, None);
+            cur_link = boxed_node.next.take();
         }
     }
 }
@@ -134,20 +154,20 @@ mod tests {
 
         assert_eq!(list.peek(), Some(&42));
         assert_eq!(list.pop(), Some(42));
+    }
 
-        #[test]
-        fn into_iter() {
-            let mut list = List::new();
-            list.push(1);
-            list.push(2);
-            list.push(3);
+    #[test]
+    fn into_iter() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
 
-            let mut iter = list.into_iter();
-            assert_eq!(iter.next(), Some(3));
-            assert_eq!(iter.next(), Some(2));
-            assert_eq!(iter.next(), Some(1));
-            assert_eq!(iter.next(), None);
-        }
+        let mut iter = list.into_iter();
+        assert_eq!(iter.next(), Some(3));
+        assert_eq!(iter.next(), Some(2));
+        assert_eq!(iter.next(), Some(1));
+        assert_eq!(iter.next(), None);
     }
 
     #[test]
@@ -161,5 +181,18 @@ mod tests {
         assert_eq!(iter.next(), Some(&3));
         assert_eq!(iter.next(), Some(&2));
         assert_eq!(iter.next(), Some(&1));
+    }
+
+    #[test]
+    fn iter_mut() {
+        let mut list = List::new();
+        list.push(1);
+        list.push(2);
+        list.push(3);
+
+        let mut iter = list.iter_mut();
+        assert_eq!(iter.next(), Some(&mut 3));
+        assert_eq!(iter.next(), Some(&mut 2));
+        assert_eq!(iter.next(), Some(&mut 1));
     }
 }
